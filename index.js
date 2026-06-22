@@ -132,9 +132,11 @@ function router(req, res, config) {
   //   - 拆出 handleNotFound(req, res)：404 邏輯
   //   - router 只看 method + url、呼叫對應 handler
   // formidable 錯誤處理要點：
-  //   - 超過 maxFileSize 時 formidable v3 發 'error' event，要用 form.on('error', ...) 接
-  //   - 同時 form.parse 的 callback err 也要處理
-  //   - 避免重複 res.writeHead（檢查 res.headersSent）
+  //   - 錯誤解析（例如：maxFileSize）會進到 form.parse 的 callback err，因此錯誤回應（res）可撰寫在這個 callback
+  //   - form.on('error', ...) 不需再處理 res 相關，避免產生回應兩次的錯誤。這個部分可用來紀錄 log、清理暫存檔、額外監控等等。目前可先有此概念即可，或者初步撰寫如下：
+  //     form.on('error', (err) => {
+  //       console.log(err); // 記錄 log、清理暫存檔、額外監控可以寫在這邊
+  //     });  
 }
 
 // ========== 任務六：建立上傳 server ==========
